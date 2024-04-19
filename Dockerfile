@@ -28,7 +28,6 @@ WORKDIR ${FUNCTION_DIR}/ffmpeg-4.3
 
 
 # If 'configure' script is found, proceed with configuration and installation
-RUN ./configure --prefix=/usr/local --enable-shared --enable-gpl --enable-libx264
 RUN make
 RUN make install
 RUN /usr/local/bin/ffmpeg -version
