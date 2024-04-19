@@ -14,7 +14,7 @@ RUN chown -R apache:apache /var/www && \
 
 # Customize the default web page
 RUN echo '<html><body><h1>Welcome to my website running on Amazon Linux 2023 with Apache!</h1></body></html>' > /var/www/html/index.html
-
+RUN echo 'ok' > /var/www/html/healthcheck/index.html
 # Expose port 80 to the host
 EXPOSE 80
 
