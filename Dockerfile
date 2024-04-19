@@ -24,7 +24,7 @@ WORKDIR ${FUNCTION_DIR}/ffmpeg-4.2
 RUN ls -l  # Confirm presence of the configure script
 
 # Configure, make, and install FFmpeg
-RUN ./configure --prefix=/usr/local --enable-shared --enable-gpl --enable-libx264
+RUN ./configure --prefix=/usr/local --enable-shared --enable-gpl
 RUN make
 RUN make install
 RUN /usr/local/bin/ffmpeg -version
