@@ -1,30 +1,26 @@
-ARG FUNCTION_DIR="/function"
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build-image
+# Use Amazon Linux 2023 as the base image
+FROM amazonlinux:2023
 
-WORKDIR ${FUNCTION_DIR}
-RUN yum groupinstall "Development Tools" -y
-RUN yum install -y yasm nasm libX11-devel libXext-devel libXfixes-devel zlib-devel bzip2-devel openssl-devel ncurses-devel git gcc make wget pkgconfig
-RUN yum install -y autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel python3-pip httpd
-ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig
+# Install updates and Apache
+RUN yum update -y && \
+    yum install -y httpd && \
+    yum clean all
 
-# Clone and install x264
-RUN git clone --depth 1 https://code.videolan.org/videolan/x264.git
-WORKDIR ${FUNCTION_DIR}/x264
-RUN ./configure --prefix=/usr/local --enable-shared --enable-static --enable-libx264
-RUN make
-RUN make install
-RUN systemctl start httpd
-RUN systemctl enable httpd
+# Add a non-root user and adjust permissions
+RUN useradd -m apache && \
+    chown -R apache:apache /var/www && \
+    chown -R apache:apache /etc/httpd && \
+    chown -R apache:apache /var/log/httpd && \
+    chown -R apache:apache /run/httpd
+
+# Customize the default web page
+RUN echo '<html><body><h1>Welcome to my website running on Amazon Linux 2023 with Apache!</h1></body></html>' > /var/www/html/index.html
+RUN echo 'OK' > /var/www/html/healthcheck/index.html
+# Expose port 80 to the host
 EXPOSE 80
-RUN cd /var/www/html
-RUN mkdir healthcheck
-RUN echo "ok" > ./healthcheck/index.html
-COPY bin/ffmpeg /usr/local/bin/
-RUN chmod +x /usr/local/bin/ffmpeg
-ENV PATH="/usr/local/bin:${PATH}"
 
-COPY . .
-RUN pip install -r requirements.txt
+# Use the non-root user to run the web service
+USER apache
 
-CMD ["main.lambda_handler"]
-
+# Start Apache in the foreground
+CMD ["/usr/sbin/httpd", "-D", "FOREGROUND"]
