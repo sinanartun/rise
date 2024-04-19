@@ -19,15 +19,15 @@ WORKDIR ${FUNCTION_DIR}
 COPY . .
 
 # List extracted contents to check directory structure and names
-RUN ls -l ${FUNCTION_DIR}
+
 
 # Verify and adjust WORKDIR based on the actual directory name from the listing above
 # Assuming the directory is named "ffmpeg-4.3" based on earlier assumption
 WORKDIR ${FUNCTION_DIR}/ffmpeg-4.2
+RUN ls -l
 
 
-# If 'configure' script is found, proceed with configuration and installation
-RUN ./configure --prefix=/usr/local --enable-shared --enable-gpl --enable-libx264
+RUN ${FUNCTION_DIR}/ffmpeg-4.2/configure --prefix=/usr/local --enable-shared --enable-gpl --enable-libx264
 RUN make
 RUN make install
 RUN /usr/local/bin/ffmpeg -version
