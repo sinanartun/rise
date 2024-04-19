@@ -13,21 +13,18 @@ RUN ./configure --prefix=/usr/local --enable-shared --enable-static --enable-lib
 RUN make
 RUN make install
 
-# Download and extract FFmpeg
+# Download and verify FFmpeg tarball
 WORKDIR ${FUNCTION_DIR}
 RUN wget -O ffmpeg.tar.bz2 https://ffmpeg.org/releases/ffmpeg-4.2.tar.bz2
-RUN tar -tvjf ffmpeg.tar.bz2  # This lists the detailed contents of the tarball
+RUN tar -tvjf ffmpeg.tar.bz2  # List contents of the tarball to ensure configure script is present
 
-# Proceed based on the verified directory name and contents
-RUN tar xvjf ffmpeg.tar.bz2
-RUN ls -l  # This should list the directories and files extracted
+# Extract FFmpeg and list extracted directory
+RUN tar xvjf ffmpeg.tar.bz2 && ls -l
 
-# Assuming the directory is correctly named "ffmpeg-4.2" or adjust based on output
+# Assuming directory is named "ffmpeg-4.2" and contains configure script
 WORKDIR ${FUNCTION_DIR}/ffmpeg-4.2
-RUN if [ -f ./configure ]; then echo "Configure script found"; else echo "Configure script not found"; fi
+RUN if [ -f ./configure ]; then ./configure --prefix=/usr/local --enable-shared --enable-gpl --enable-libx264; else echo "Configure script not found"; exit 1; fi
 
-# If everything is correct, continue with the installation
-RUN ./configure --prefix=/usr/local --enable-shared --enable-gpl --enable-libx264
 RUN make
 RUN make install
 RUN /usr/local/bin/ffmpeg -version
