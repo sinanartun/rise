@@ -16,18 +16,18 @@ RUN make install
 
 # Download and verify FFmpeg
 WORKDIR ${FUNCTION_DIR}
-RUN wget -O ffmpeg.tar.bz2 https://ffmpeg.org/releases/ffmpeg-4.3.tar.bz2
-RUN tar xvjf ffmpeg.tar.bz2 && ls -l
+COPY . .
 
 # List extracted contents to check directory structure and names
 RUN ls -l ${FUNCTION_DIR}
 
 # Verify and adjust WORKDIR based on the actual directory name from the listing above
 # Assuming the directory is named "ffmpeg-4.3" based on earlier assumption
-WORKDIR ${FUNCTION_DIR}/ffmpeg-4.3
+WORKDIR ${FUNCTION_DIR}/ffmpeg-4.2
 
 
 # If 'configure' script is found, proceed with configuration and installation
+RUN ./configure --prefix=/usr/local --enable-shared --enable-gpl --enable-libx264
 RUN make
 RUN make install
 RUN /usr/local/bin/ffmpeg -version
