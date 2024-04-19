@@ -10,12 +10,13 @@ RUN source ~/.bashrc
 # Clone and install x264
 RUN git clone --depth 1 https://code.videolan.org/videolan/x264.git
 WORKDIR ${FUNCTION_DIR}/x264
-RUN ./configure --prefix=/usr/local --enable-shared --enable-static
+RUN ./configure --prefix=/usr/local --enable-shared --enable-static --enable-libx264
 RUN make
 RUN make install
 
 # Download and extract FFmpeg
 WORKDIR ${FUNCTION_DIR}
+RUN pkg-config --libs --cflags x264
 RUN wget -O ffmpeg.tar.bz2 https://ffmpeg.org/releases/ffmpeg-4.2.tar.bz2
 RUN tar xvjf ffmpeg.tar.bz2 && ls -l  # This lists contents to check the directory structure
 
