@@ -29,7 +29,7 @@ RUN pkg-config --exists --print-errors x264
 RUN cd /usr/local/src/ffmpeg
 RUN -E ./configure --prefix=/usr/local --enable-gpl --enable-nonfree --enable-libx264 --enable-libvpx \
 --extra-cflags="-I/usr/local/include" --extra-ldflags="-L/usr/local/lib"
-RUN sudo make
+RUN make
 RUN make install
 RUN ffmpeg -version
 
