@@ -1,6 +1,5 @@
 ARG FUNCTION_DIR="/function"
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build-image
-
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 WORKDIR ${FUNCTION_DIR}
 RUN yum groupinstall "Development Tools" -y
 RUN yum -y install yasm nasm libX11-devel libXext-devel libXfixes-devel zlib-devel bzip2-devel openssl-devel ncurses-devel git gcc make wget pkgconfig
