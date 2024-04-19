@@ -9,7 +9,7 @@ RUN git clone --depth 1 https://code.videolan.org/videolan/x264.git
 WORKDIR ${FUNCTION_DIR}/x264
 RUN ./configure --prefix=/usr/local --enable-shared --enable-static
 RUN make
-RUN sudo make install
+RUN make install
 
 # Download and extract FFmpeg
 RUN wget -O ffmpeg.tar.bz2 https://ffmpeg.org/releases/ffmpeg-4.2.tar.bz2
