@@ -1,36 +1,37 @@
-# Use Amazon Linux 2023 as the base image
 FROM amazonlinux:2023
+
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+
+
 WORKDIR /app
 
-RUN yum groupinstall "Development Tools" -y
 
-RUN yum install -y python3-pip git virtualenv
+RUN yum groupinstall "Development Tools" -y && \
+    yum install -y python3-pip git virtualenv && \
+    yum install yasm nasm pkgconfig zlib-devel libtool -y && \
+    yum install freetype-devel speex-devel libtheora-devel libvorbis-devel libogg-devel libvpx-devel -y
 
-RUN yum install yasm nasm pkgconfig zlib-devel libtool -y
-RUN yum install freetype-devel speex-devel libtheora-devel libvorbis-devel libogg-devel libvpx-devel -y
+# Clone and build x264
+RUN cd /usr/local/src && \
+    git clone http://git.videolan.org/git/x264.git && \
+    cd x264 && \
+    ./configure --enable-static --prefix=/usr/local --enable-pic && \
+    make && \
+    make install
 
+# Verify if PKG_CONFIG_PATH is set correctly and pkg-config can find x264
+RUN echo $PKG_CONFIG_PATH && \
+    pkg-config --exists --print-errors x264
 
+# Clone FFmpeg repo (assuming it has been previously added to /usr/local/src, adjust if necessary)
+# Configure, make, and install FFmpeg with libx264 and libvpx
+RUN cd /usr/local/src/ffmpeg && \
+    ./configure --prefix=/usr/local --enable-gpl --enable-nonfree --enable-libx264 --enable-libvpx \
+    --extra-cflags="-I/usr/local/include" --extra-ldflags="-L/usr/local/lib" && \
+    make && \
+    make install && \
+    ffmpeg -version
 
-RUN cd /usr/local/src
-RUN git clone http://git.videolan.org/git/x264.git
-RUN cd x264
-RUN ./configure --enable-static
-RUN make
-RUN make install
-
-RUN echo $PKG_CONFIG_PATH
-RUN pkg-config --exists --print-errors x264
-
-
-
-
-RUN cd /usr/local/src/ffmpeg
-RUN -E ./configure --prefix=/usr/local --enable-gpl --enable-nonfree --enable-libx264 --enable-libvpx \
---extra-cflags="-I/usr/local/include" --extra-ldflags="-L/usr/local/lib"
-RUN make
-RUN make install
-RUN ffmpeg -version
 
 # RUN yum install -y yasm nasm libX11-devel libXext-devel libXfixes-devel zlib-devel bzip2-devel openssl-devel ncurses-devel git gcc make wget pkgconfig
 # RUN yum install -y autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel python3-pip httpd
