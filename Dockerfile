@@ -3,8 +3,10 @@ FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build-image
 
 WORKDIR ${FUNCTION_DIR}
 RUN yum groupinstall "Development Tools" -y
-RUN yum -y install yasm nasm libX11-devel libXext-devel libXfixes-devel zlib-devel bzip2-devel openssl-devel ncurses-devel git gcc make wget
+RUN yum -y install yasm nasm libX11-devel libXext-devel libXfixes-devel zlib-devel bzip2-devel openssl-devel ncurses-devel git gcc make wget pkgconfig
 
+RUN echo "export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:\$PKG_CONFIG_PATH" >> ~/.bashrc
+RUN source ~/.bashrc
 # Clone and install x264
 RUN git clone --depth 1 https://code.videolan.org/videolan/x264.git
 WORKDIR ${FUNCTION_DIR}/x264
