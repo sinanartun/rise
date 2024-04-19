@@ -4,7 +4,7 @@ FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build-image
 WORKDIR ${FUNCTION_DIR}
 RUN yum groupinstall "Development Tools" -y
 RUN yum -y install yasm nasm libX11-devel libXext-devel libXfixes-devel zlib-devel bzip2-devel openssl-devel ncurses-devel git gcc make wget pkgconfig
-
+RUN yum install -y autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel
 ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig
 
 # Clone and install x264
@@ -27,11 +27,9 @@ RUN ls -l ${FUNCTION_DIR}
 WORKDIR ${FUNCTION_DIR}/ffmpeg-4.3
 RUN ls -l  # This should list all contents including 'configure'
 
-# Check if 'configure' script is present
-RUN if [ -f ./configure ]; then echo "Configure script found"; else echo "Configure script not found"; exit 1; fi
 
 # If 'configure' script is found, proceed with configuration and installation
-RUN ./configure --prefix=/usr/local --enable-shared --enable-gpl --enable-libx264
+RUN configure --prefix=/usr/local --enable-shared --enable-gpl --enable-libx264
 RUN make
 RUN make install
 RUN /usr/local/bin/ffmpeg -version
