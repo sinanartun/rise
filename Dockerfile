@@ -1,6 +1,6 @@
 # Use Amazon Linux 2023 as the base image
 FROM amazonlinux:2023
-
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 WORKDIR /app
 
 RUN yum groupinstall "Development Tools" -y
@@ -18,9 +18,8 @@ RUN cd x264
 RUN ./configure --enable-static
 RUN make
 RUN make install
-ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
-RUN echo $PKG_CONFIG_PATH
 
+RUN echo $PKG_CONFIG_PATH
 RUN pkg-config --exists --print-errors x264
 
 
