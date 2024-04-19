@@ -4,7 +4,7 @@ FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build-image
 WORKDIR ${FUNCTION_DIR}
 RUN yum groupinstall "Development Tools" -y
 RUN yum install -y yasm nasm libX11-devel libXext-devel libXfixes-devel zlib-devel bzip2-devel openssl-devel ncurses-devel git gcc make wget pkgconfig
-RUN yum install -y autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel
+RUN yum install -y autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel python3-pip
 ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig
 
 # Clone and install x264
