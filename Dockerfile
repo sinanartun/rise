@@ -1,8 +1,9 @@
 ARG FUNCTION_DIR="/function"
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build-image
+
 WORKDIR ${FUNCTION_DIR}
 RUN yum groupinstall "Development Tools" -y
-RUN yum -y install yasm nasm libX11-devel libXext-devel libXfixes-devel zlib-devel bzip2-devel openssl-devel ncurses-devel git gcc make wget pkgconfig
+RUN yum install -y yasm nasm libX11-devel libXext-devel libXfixes-devel zlib-devel bzip2-devel openssl-devel ncurses-devel git gcc make wget pkgconfig
 RUN yum install -y autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel
 ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig
 
@@ -13,23 +14,9 @@ RUN ./configure --prefix=/usr/local --enable-shared --enable-static --enable-lib
 RUN make
 RUN make install
 
-# Download and verify FFmpeg
-WORKDIR ${FUNCTION_DIR}
-COPY . .
-
-# List extracted contents to check directory structure and names
-
-
-# Verify and adjust WORKDIR based on the actual directory name from the listing above
-# Assuming the directory is named "ffmpeg-4.3" based on earlier assumption
-WORKDIR ${FUNCTION_DIR}/ffmpeg-4.2
-RUN ls -l
-
-
-RUN ${FUNCTION_DIR}/ffmpeg-4.2/configure --prefix=/usr/local --enable-shared --enable-gpl --enable-libx264
-RUN make
-RUN make install
-RUN /usr/local/bin/ffmpeg -version
+COPY bin/ffmpeg /usr/local/bin/
+RUN chmod +x /usr/local/bin/ffmpeg
+ENV PATH="/usr/local/bin:${PATH}"
 
 COPY . .
 RUN pip install -r requirements.txt
