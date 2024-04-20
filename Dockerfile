@@ -2,9 +2,7 @@ FROM amazonlinux:2023
 
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
-
 WORKDIR /app
-
 
 RUN yum groupinstall "Development Tools" -y && \
     yum install -y python3-pip git virtualenv && \
@@ -23,9 +21,7 @@ RUN cd /usr/local/src && \
 RUN echo $PKG_CONFIG_PATH && \
     pkg-config --exists --print-errors x264
 
-# Clone FFmpeg repo (assuming it has been previously added to /usr/local/src, adjust if necessary)
-# Configure, make, and install FFmpeg with libx264 and libvpx
-
+# Clone FFmpeg repo, configure, make, and install FFmpeg with libx264 and libvpx
 RUN cd /usr/local/src && \
     wget https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
     tar xjvf ffmpeg-snapshot.tar.bz2 && \
@@ -36,11 +32,15 @@ RUN cd /usr/local/src && \
     make install && \
     ffmpeg -version
 
-RUN cd /app
-COPY . .    
+# Copy the current directory contents into the container at /app
+COPY . .
+
+# Set up Python environment and install dependencies
 RUN python3 -m venv venv && \
-source venv/bin/activate && \
-pip install -r requirements.txt
+    ./venv/bin/pip install -r requirements.txt
 
+# Make port 80 available to the world outside this container
+EXPOSE 80
 
-CMD ["python3", "/app/app.py"]
+# Run app.py when the container launches
+CMD ["./venv/bin/python", "app.py"]
