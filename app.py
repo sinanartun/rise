@@ -8,7 +8,7 @@ def healthcheck():
     return jsonify({"status": "OK"}), 200
 
 
-@app.route('/process_video/<video_id>', methods=['POST'])
+@app.route('/process_video/<video_id>', methods=['GET'])
 def process_video(video_id):
     event = {'video_id': video_id}
     context = {}  # You can define context if needed or pass an empty dictionary
