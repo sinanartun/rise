@@ -25,7 +25,11 @@ RUN echo $PKG_CONFIG_PATH && \
 
 # Clone FFmpeg repo (assuming it has been previously added to /usr/local/src, adjust if necessary)
 # Configure, make, and install FFmpeg with libx264 and libvpx
-RUN cd /usr/local/src/ffmpeg && \
+
+RUN cd /usr/local/src && \
+    wget https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
+    tar xjvf ffmpeg-snapshot.tar.bz2 && \
+    cd /usr/local/src/ffmpeg && \
     ./configure --prefix=/usr/local --enable-gpl --enable-nonfree --enable-libx264 --enable-libvpx \
     --extra-cflags="-I/usr/local/include" --extra-ldflags="-L/usr/local/lib" && \
     make && \
