@@ -16,4 +16,4 @@ def process_video(video_id):
     return jsonify({"status": "Processing started for video ID " + video_id}), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=8080)
