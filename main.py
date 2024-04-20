@@ -164,7 +164,7 @@ def create_video():
 
 
 video_id = ''
-def lambda_handler(event, context):
+def main(event, context):
     video_id = event.get('video_id','ygCW0CWO')
     item =get_item_from_dynamodb('ygCW0CWO')
     image_url_s = item.get('image_url')
