@@ -9,7 +9,7 @@ WORKDIR /app
 RUN yum groupinstall "Development Tools" -y && \
     yum install -y python3-pip git virtualenv && \
     yum install yasm nasm pkgconfig zlib-devel libtool -y && \
-    yum install freetype-devel speex-devel libtheora-devel libvorbis-devel libogg-devel libvpx-devel -y
+    yum install freetype-devel speex-devel libtheora-devel libvorbis-devel libogg-devel libvpx-devel wget -y
 
 # Clone and build x264
 RUN cd /usr/local/src && \
