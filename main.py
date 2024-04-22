@@ -22,22 +22,18 @@ def download_image(image_url):
         print(f"An error occurred: {str(e)}")
 
 def get_item_from_dynamodb(video_id):
-    session = boto3.Session(
-
-        region_name='eu-north-1'
-    )
-    dynamodb = session.client('dynamodb', region_name='eu-north-1')
-
+    dynamodb = boto3.client('dynamodb')
     try:
         response = dynamodb.get_item(TableName='wojak', Key={'id': {'S': video_id}})
         if 'Item' in response:
-            item = response['Item']
-            return item
+            return response['Item']
         else:
-            return "No item found with ID: {}".format(video_id)
+            print(f"No item found with ID: {video_id}")
+            return None  # Changed from returning a string to None
     except ClientError as e:
-        print(e.response['Error']['Message'])
-        return "Error accessing DynamoDB: {}".format(e.response['Error']['Message'])
+        print(f"Error accessing DynamoDB: {e.response['Error']['Message']}")
+        return None  # Changed from returning a string to None
+
 
 
 def upload_file_to_s3(file_name, bucket_name, object_name=None):
@@ -163,7 +159,6 @@ def create_video():
 
 
 
-video_id = ''
 def main(video_id):
     item = get_item_from_dynamodb(video_id)
     if not item:
