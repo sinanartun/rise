@@ -1,19 +1,20 @@
 from flask import Flask, request, jsonify
-from main import main
 import logging
+from main import main
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
-@app.route('/healthcheck/', methods=['GET'])
+@app.route('/healthcheck', methods=['GET'])
 def healthcheck():
     return jsonify({"status": "OK"}), 200
 
 @app.route('/process_video/<video_id>', methods=['GET'])
 def process_video(video_id):
-
     try:
-        print(video_id)
+        logging.info(f"Starting processing for video ID {video_id}")
         main(video_id)
+        logging.info(f"Processing started for video ID {video_id}")
         return jsonify({"status": "Processing started for video ID " + video_id}), 200
     except Exception as e:
         logging.error(f"Error processing video {video_id}: {str(e)}")
