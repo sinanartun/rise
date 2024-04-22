@@ -22,7 +22,12 @@ def download_image(image_url):
         print(f"An error occurred: {str(e)}")
 
 def get_item_from_dynamodb(video_id):
-    dynamodb = boto3.client('dynamodb')
+    session = boto3.Session(
+
+        region_name='eu-north-1'
+    )
+    dynamodb = session.client('dynamodb', region_name='eu-north-1')
+
     try:
         response = dynamodb.get_item(TableName='wojak', Key={'id': {'S': video_id}})
         if 'Item' in response:
