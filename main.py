@@ -21,7 +21,7 @@ def download_image(image_url):
     except Exception as e:
         print(f"An error occurred: {str(e)}")
 
-def get_item_from_dynamodb():
+def get_item_from_dynamodb(video_id):
     session = boto3.Session(
 
         region_name='eu-north-1'
@@ -164,21 +164,24 @@ def create_video():
 
 
 video_id = ''
-def main(event, context):
-    video_id = event.get('video_id','ygCW0CWO')
-    item =get_item_from_dynamodb('ygCW0CWO')
-    image_url_s = item.get('image_url')
-    image_url = image_url_s['S']
-    script   = item.get('script')
-    data = json.loads(script['S'])
-    print(data)
-    
-    download_image(image_url)
-    time.sleep(1)
-    crop_image()
-    time.sleep(1)
-    create_video()
-    time.sleep(1)
-    add_mp3_to_video()
-    time.sleep(1)
+def main(video_id):
+    item = get_item_from_dynamodb(video_id)
+    if not item:
+        print(f"Failed to get item for video_id {video_id}")
+        return
+
+    image_url = item.get('image_url', {}).get('S')
+    if not image_url:
+        print(f"No image URL found for video_id {video_id}")
+        return
+
+    file_path = download_image(image_url, video_id)
+    if not file_path:
+        return
+
+    crop_path = f'/tmp/background_{video_id}.png'
+    crop_image(file_path, crop_path)
+
+    # Placeholder for video creation and audio merging logic
+
     upload_file_to_s3(f'/tmp/video_{video_id}.mp4', 'helloafrica', f'video_{video_id}.mp4')

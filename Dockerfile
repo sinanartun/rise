@@ -40,7 +40,7 @@ RUN python3 -m venv venv && \
     ./venv/bin/pip install -r requirements.txt
 
 # Make port 80 available to the world outside this container
-EXPOSE 80
+EXPOSE 8080
 
 # Run app.py when the container launches
 CMD ["./venv/bin/python", "app.py"]
